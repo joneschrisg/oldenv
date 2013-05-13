@@ -1,0 +1,24 @@
+[ui]
+username = Chris Jones <cjones.bugs@gmail.com>
+merge = meld
+editor=gedit
+
+[diff]
+git = 1
+showfunc = 1
+unified = 8
+
+[defaults]
+diff = -p -U 8
+qdiff = -p -U 8
+qnew = -U
+
+[extensions]
+hgext.graphlog = 
+hgext.mq =
+hgext.rebase =
+qimportbz = /home/cjones/mozilla/qimportbz
+color =
+transplant =
+record =
+#progress =

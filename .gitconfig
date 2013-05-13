@@ -1,0 +1,11 @@
+[alias]
+	dif = diff -p -U8
+[core]
+	pager = cat
+[man]
+	viewer = catman
+[man "catman"]
+	cmd = man -P cat
+[user]
+	email = cjones.bugs@gmail.com
+	name = Chris Jones
