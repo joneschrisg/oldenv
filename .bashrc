@@ -109,51 +109,6 @@ alias makeless='make 2>&1 | less'
 # Always enable expressions for echo
 alias echo='echo -e'
 
-# CVS shortcuts
-alias cvsupdate='cvs -q update -dP'
-alias cvsdiff='cvs -q diff -u | less'
-
-# OCF account
-alias ocf='ssh -X cgjones@ocf.berkeley.edu'
-
-##-----------------------------------------------------------------------------
-## CS 164 Stuff
-##
-alias cobolssh='ssh cgjones@cobol.cs.berkeley.edu'
-alias playssh='ssh cgjones@play.cs.berkeley.edu'
-alias ta-cs164='ssh -X cs164-tb@quasar.cs.berkeley.edu'
-alias master-cs164='ssh -X cs164@quasar.cs.berkeley.edu'
-
-# CVS setup
-export CVSDIR=/home/cvs/cvsroot
-
-#alias cvslogin='cvs -d :pserver:cgjones@cobol.cs.berkeley.edu:${CVSDIR}'
-#alias cvsskipjax='export CVSROOT=:ext:cgjones@cobol.cs.berkeley.edu:${CVSDIR}; export CVS_RSH=ssh; pass'
-#alias pass='eval `ssh-agent -s`; ssh-add ~/.ssh/cs162-cp'
-
-##-----------------------------------------------------------------------------
-## Berkeley SSH shortcuts
-##
-alias ps3ssh='ssh -X cjones@ps3-1.cs.berkeley.edu'
-
-##-----------------------------------------------------------------------------
-## Flapjax
-##
-FJX_DIR=~/cs164/flapjax
-
-PATH=$PATH:$FJX_DIR
-
-
-##-----------------------------------------------------------------------------
-## CS 194
-##
-alias cs194ssh='ssh cs194-bk@zen.millennium.berkeley.edu'
-
-##-----------------------------------------------------------------------------
-## GPG key
-##
-export GPGKEY=304B5786
-
 ##-----------------------------------------------------------------------------
 ## ccache
 ##
@@ -182,13 +137,3 @@ export PATH=~/xbin:$PATH
 ##-----------------------------------------------------------------------------
 ## valgrind
 export PATH=~/usr/lib/valgrind:$PATH
-
-##-----------------------------------------------------------------------------
-## android tools
-export PATH=$PATH:/home/cjones/android/android-sdk-linux_86/tools
-
-##-----------------------------------------------------------------------------
-## ptolemy II
-export PTII=/home/cjones/src/ptII8.0.beta
-
-export PATH=$PATH:/home/cjones/mozilla/new-b2g/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin

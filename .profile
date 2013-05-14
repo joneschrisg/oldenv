@@ -32,25 +32,3 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # Add home bin directories to path
 PATH="$HOME/sbin:$HOME/usr/bin:$PATH:$HOME/bin"
-
-##-----------------------------------------------------------------------------
-## Groovy
-##
-#GROOVY_HOME=$HOME/groovy/groovy-1.0
-#PATH=${PATH}:$HOME/groovy/groovy-1.0/bin
-
-##-----------------------------------------------------------------------------
-## Intel compiler
-##
-#LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/intel/cc/10.0.023/lib"
-
-##-----------------------------------------------------------------------------
-## Ptolemy
-##
-PTII="$HOME/src/ptII6.0.2"
-
-##-----------------------------------------------------------------------------
-## Android
-##
-ANDROID_PRODUCT_OUT="$HOME/android/out/target/product/generic/" 
-
