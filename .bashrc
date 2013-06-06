@@ -137,3 +137,10 @@ export PATH=~/xbin:$PATH
 ##-----------------------------------------------------------------------------
 ## valgrind
 export PATH=~/usr/lib/valgrind:$PATH
+
+# Supply a branch name to eat and update on top of.  For example,
+#
+#  $ # merge branch 'foo' into upstream
+#  $ eatbranch foo
+#
+alias eatbranch='git checkout master && git pull && git fetch upstream && git merge upstream/master && git branch -D '
