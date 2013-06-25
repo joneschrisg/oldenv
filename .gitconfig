@@ -9,3 +9,5 @@
 [user]
 	email = cjones.bugs@gmail.com
 	name = Chris Jones
+[push]
+	default = simple
