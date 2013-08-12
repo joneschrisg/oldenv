@@ -147,4 +147,4 @@ alias eatbranch='git checkout master && git pull && git fetch upstream && git me
 
 ##-----------------------------------------------------------------------------
 ## rr
-export LD_LIBRARY_PATH="$HOME/rr/rr/obj/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="$HOME/rr/obj/lib:${LD_LIBRARY_PATH}"
