@@ -1,4 +1,4 @@
-set environment LD_LIBRARY_PATH=/home/cjones/mozilla/ff-dbg/dist/lib:/usr/lib/debug/usr/lib/
+set environment LD_LIBRARY_PATH=/home/cjones/rr/obj/lib
 set print object
 
 #                                                                                                        
@@ -773,6 +773,49 @@ document ptarray
 	ptarray a - Prints tarray content, size, capacity and T typedef
 	ptarray a 0 - Prints element[idx] from tarray
 	ptarray a 1 2 - Prints elements in range [idx1..idx2] from tarray
+end 
+
+
+def pu
+  set $uni = $arg0
+  if $argc == 2
+    set $limit = $arg1
+    if $limit > 100
+      set $limit = 100
+    end
+  else
+    set $limit = 100
+  end
+  # scratch array with space for 100 chars plus null terminator.  Make
+  # sure to not use ' ' as the char so this copy/pastes well.
+  set $scratch = "____________________________________________________________________________________________________"
+  set $i = 0
+  set $scratch_idx = 0
+  while (*$uni && $i++ < $limit)
+    if (*$uni < 0x80)
+      set $scratch[$scratch_idx++] = *(char*)$uni++
+    else
+      if ($scratch_idx > 0)
+	set $scratch[$scratch_idx] = '\0'
+	print $scratch
+	set $scratch_idx = 0
+      end
+      print /x *(short*)$uni++
+    end
+  end
+  if ($scratch_idx > 0)
+    set $scratch[$scratch_idx] = '\0'
+    print $scratch
+  end
+end
+
+document pu
+	Prints UCS-16 strings (100 16-bit chars max).
+	Syntax: pu <ucs16-string> [<num-chars>]
+	Note: if supplied, num-chars must be less than 100.
+	Examples:
+	pu str - Prints str
+	pu str 27 - Prints first 27 chars of str
 end 
 
 #
