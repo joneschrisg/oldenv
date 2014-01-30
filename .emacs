@@ -406,3 +406,11 @@
 ;; cmake
 (autoload 'cmake-mode "cmake-mode" "Editing mode for CMake" t)
 (assoc-mode-with 'cmake-mode '("CMakeLists\\.txt$" "\\.cmake$"))
+
+;;-----------------------------------------------------------------------------
+(defun kill-other-buffers ()
+      "Kill all other buffers."
+      (interactive)
+      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+
+(global-set-key (kbd "C-x a") 'kill-other-buffers)   
