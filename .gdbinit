@@ -848,3 +848,13 @@ document ppixmap
 	Launches a process to display an X pixmap
 	Syntax: ppixmap <pixmapXID>
 end 
+
+
+
+define trace_ecx_edx
+  while (1)
+    printf "before:\n"
+    x/i $eip
+    stepi
+    printf "--> after: ecx:%#x edx:%#x\n", $ecx, $edx
+  end

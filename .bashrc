@@ -144,7 +144,3 @@ export PATH=~/usr/lib/valgrind:$PATH
 #  $ eatbranch foo
 #
 alias eatbranch='git checkout master && git pull && git fetch upstream && git merge upstream/master && git branch -D '
-
-##-----------------------------------------------------------------------------
-## rr
-export LD_LIBRARY_PATH="$HOME/rr/obj/lib:${LD_LIBRARY_PATH}"
