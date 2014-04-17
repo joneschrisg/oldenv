@@ -417,3 +417,8 @@
       (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
 (global-set-key (kbd "C-x a") 'kill-other-buffers)   
+
+;;-----------------------------------------------------------------------------
+;; rust
+(autoload 'rust-mode "rust-mode" "Editing mode for Rust" t)
+(assoc-mode-with 'rust-mode '("\\.rs$"))
