@@ -110,14 +110,6 @@ alias makeless='make 2>&1 | less'
 alias echo='echo -e'
 
 ##-----------------------------------------------------------------------------
-## ccache
-##
-export CCACHE_DIR=$HOME/.ccache
-export CCACHE_HARDLINK=1
-export CC="ccache gcc"
-export CXX="ccache g++"
-
-##-----------------------------------------------------------------------------
 ## Mozilla
 ##
 export MOZILLA_CENTRAL=$HOME/mozilla/mozilla-central
