@@ -136,3 +136,12 @@ export PATH=~/usr/lib/valgrind:$PATH
 #  $ eatbranch foo
 #
 alias eatbranch='git checkout master && git pull && git fetch upstream && git merge upstream/master && git branch -D '
+
+# Add js.jar to the java classpath
+export CLASSPATH="$CLASSPATH:$HOME/lib/java:$HOME/lib/java/js.jar"
+
+# Extend ld search path
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+
+# Add home bin directories to path
+export PATH="$HOME/sbin:$HOME/usr/bin:$PATH:$HOME/bin"

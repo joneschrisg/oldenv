@@ -20,15 +20,3 @@ fi
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
-
-##-----------------------------------------------------------------------------
-## My modifications
-
-# Add js.jar to the java classpath
-CLASSPATH="$CLASSPATH:$HOME/lib/java:$HOME/lib/java/js.jar"
-
-# Extend ld search path
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
-
-# Add home bin directories to path
-PATH="$HOME/sbin:$HOME/usr/bin:$PATH:$HOME/bin"
