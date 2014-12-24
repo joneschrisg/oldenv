@@ -2,25 +2,34 @@
 
 ;; Version: 0.2.0
 ;; Author: Mozilla
-;; Url: https://github.com/mozilla/rust
+;; Url: https://github.com/rust-lang/rust
+;; Keywords: languages
 
-(eval-when-compile (require 'cl))
+;;; Commentary:
+;;
+
+;;; Code:
+
 (eval-when-compile (require 'misc))
+
+;; for GNU Emacs < 24.3
+(eval-when-compile
+  (unless (fboundp 'setq-local)
+    (defmacro setq-local (var val)
+      "Set variable VAR to value VAL in current buffer."
+      (list 'set (list 'make-local-variable (list 'quote var)) val))))
 
 ;; Syntax definitions and helpers
 (defvar rust-mode-syntax-table
   (let ((table (make-syntax-table)))
 
     ;; Operators
-    (loop for i in '(?+ ?- ?* ?/ ?& ?| ?^ ?! ?< ?> ?~ ?@)
-          do (modify-syntax-entry i "." table))
+    (dolist (i '(?+ ?- ?* ?/ ?& ?| ?^ ?! ?< ?> ?~ ?@))
+      (modify-syntax-entry i "." table))
 
     ;; Strings
     (modify-syntax-entry ?\" "\"" table)
     (modify-syntax-entry ?\\ "\\" table)
-
-    ;; _ is a word-char
-    (modify-syntax-entry ?_ "w" table)
 
     ;; Comments
     (modify-syntax-entry ?/  ". 124b" table)
@@ -30,10 +39,14 @@
 
     table))
 
-(defgroup rust-mode nil "Support for Rust code.")
+(defgroup rust-mode nil
+  "Support for Rust code."
+  :link '(url-link "http://www.rust-lang.org/")
+  :group 'languages)
 
 (defcustom rust-indent-offset 4
-  "*Indent Rust code by this number of spaces."
+  "Indent Rust code by this number of spaces."
+  :type 'integer
   :group 'rust-mode)
 
 (defun rust-paren-level () (nth 0 (syntax-ppss)))
@@ -122,7 +135,7 @@
                        ;; but the "else" or "{" should align with the beginning
                        ;; of the expression it's in.)
                        (looking-at "\\<else\\>\\|{")
-                       
+
                        (save-excursion
                          (rust-rewind-irrelevant)
                          ;; Point is now at the end of the previous ine
@@ -153,20 +166,21 @@
 ;; Font-locking definitions and helpers
 (defconst rust-mode-keywords
   '("as"
-    "break"
-    "continue" "crate"
+    "box" "break"
+    "const" "continue" "crate"
     "do"
     "else" "enum" "extern"
     "false" "fn" "for"
     "if" "impl" "in"
     "let" "loop"
-    "match" "mod" "mut"
-    "priv" "proc" "pub"
+    "match" "mod" "move" "mut"
+    "priv" "pub"
     "ref" "return"
     "self" "static" "struct" "super"
     "true" "trait" "type"
     "unsafe" "use"
-    "while"))
+    "virtual"
+    "where" "while"))
 
 (defconst rust-special-types
   '("u8" "i8"
@@ -196,12 +210,12 @@
      ;; Special types
      (,(regexp-opt rust-special-types 'words) . font-lock-type-face)
 
-     ;; Attributes like `#[bar(baz)]`
-     (,(rust-re-grab (concat "#\\[" rust-re-ident "[^]]*\\]"))
-      1 font-lock-preprocessor-face)
+     ;; Attributes like `#[bar(baz)]` or `#![bar(baz)]` or `#[bar = "baz"]`
+     (,(rust-re-grab (concat "#\\!?\\[" rust-re-ident "[^]]*\\]"))
+      1 font-lock-preprocessor-face keep)
 
      ;; Syntax extension invocations like `foo!`, highlight including the !
-     (,(concat (rust-re-grab (concat rust-re-ident "!")) "[({[:space:]]")
+     (,(concat (rust-re-grab (concat rust-re-ident "!")) "[({[:space:][]")
       1 font-lock-preprocessor-face)
 
      ;; Field names like `foo:`, highlight excluding the :
@@ -226,17 +240,16 @@
      )
 
    ;; Item definitions
-   (loop for (item . face) in
-
-         '(("enum" . font-lock-type-face)
-           ("struct" . font-lock-type-face)
-           ("type" . font-lock-type-face)
-           ("mod" . font-lock-type-face)
-           ("use" . font-lock-type-face)
-           ("fn" . font-lock-function-name-face)
-           ("static" . font-lock-constant-face))
-
-         collect `(,(rust-re-item-def item) 1 ,face))))
+   (mapcar #'(lambda (x)
+               (list (rust-re-item-def (car x))
+                     1 (cdr x)))
+           '(("enum" . font-lock-type-face)
+             ("struct" . font-lock-type-face)
+             ("type" . font-lock-type-face)
+             ("mod" . font-lock-type-face)
+             ("use" . font-lock-type-face)
+             ("fn" . font-lock-function-name-face)
+             ("static" . font-lock-constant-face)))))
 
 (defun rust-fill-prefix-for-comment-start (line-start)
   "Determine what to use for `fill-prefix' based on what is at the beginning of a line."
@@ -350,27 +363,26 @@
 
 ;;; Imenu support
 (defvar rust-imenu-generic-expression
-  (append (loop for item in
-                '("enum" "struct" "type" "mod" "fn" "trait")
-                collect `(nil ,(rust-re-item-def item) 1))
+  (append (mapcar #'(lambda (x)
+                      (list nil (rust-re-item-def x) 1))
+                  '("enum" "struct" "type" "mod" "fn" "trait"))
           `(("Impl" ,(rust-re-item-def "impl") 1)))
   "Value for `imenu-generic-expression' in Rust mode.
 
 Create a flat index of the item definitions in a Rust file.
 
 Imenu will show all the enums, structs, etc. at the same level.
-Implementations will be shown under the `Impl` subheading.
-Use idomenu (imenu with ido-mode) for best mileage.")
+Implementations will be shown under the `Impl` subheading.  Use
+idomenu (imenu with `ido-mode') for best mileage.")
 
 ;;; Defun Motions
 
 ;;; Start of a Rust item
-(setq rust-top-item-beg-re
-      (concat "^\\s-*\\(?:priv\\|pub\\)?\\s-*"
-              (regexp-opt
-               '("enum" "struct" "type" "mod" "use" "fn" "static" "impl"
-                 "extern" "impl" "static" "trait"
-                 ))))
+(defvar rust-top-item-beg-re
+  (concat "^\\s-*\\(?:priv\\|pub\\)?\\s-*"
+          (regexp-opt
+           '("enum" "struct" "type" "mod" "use" "fn" "static" "impl"
+             "extern" "impl" "static" "trait"))))
 
 (defun rust-beginning-of-defun (&optional arg)
   "Move backward to the beginning of the current defun.
@@ -382,7 +394,7 @@ This is written mainly to be used as `beginning-of-defun-function' for Rust.
 Don't move to the beginning of the line. `beginning-of-defun',
 which calls this, does that afterwards."
   (interactive "p")
-  (re-search-backward (concat "^\\(" rust-top-item-beg-re "\\)\\b")
+  (re-search-backward (concat "^\\(" rust-top-item-beg-re "\\)\\_>")
                       nil 'move (or arg 1)))
 
 (defun rust-end-of-defun ()
@@ -411,51 +423,42 @@ This is written mainly to be used as `end-of-defun-function' for Rust."
 (define-derived-mode rust-mode rust-parent-mode "Rust"
   "Major mode for Rust code."
   :group 'rust-mode
-
-  ;; Basic syntax
-  (set-syntax-table rust-mode-syntax-table)
+  :syntax-table rust-mode-syntax-table
 
   ;; Indentation
-  (set (make-local-variable 'indent-line-function)
-       'rust-mode-indent-line)
+  (setq-local indent-line-function 'rust-mode-indent-line)
 
   ;; Fonts
-  (set (make-local-variable 'font-lock-defaults)
-       '(rust-mode-font-lock-keywords nil nil nil nil))
+  (setq-local font-lock-defaults '(rust-mode-font-lock-keywords nil nil nil nil))
 
   ;; Misc
-  (set (make-local-variable 'comment-start) "// ")
-  (set (make-local-variable 'comment-end)   "")
-  (set (make-local-variable 'indent-tabs-mode) nil)
+  (setq-local comment-start "// ")
+  (setq-local comment-end   "")
+  (setq-local indent-tabs-mode nil)
 
   ;; Allow paragraph fills for comments
-  (set (make-local-variable 'comment-start-skip)
-       "\\(?://[/!]*\\|/\\*[*!]?\\)[[:space:]]*")
-  (set (make-local-variable 'paragraph-start)
+  (setq-local comment-start-skip "\\(?://[/!]*\\|/\\*[*!]?\\)[[:space:]]*")
+  (setq-local paragraph-start
        (concat "[[:space:]]*\\(?:" comment-start-skip "\\|\\*/?[[:space:]]*\\|\\)$"))
-  (set (make-local-variable 'paragraph-separate) paragraph-start)
-  (set (make-local-variable 'normal-auto-fill-function) 'rust-do-auto-fill)
-  (set (make-local-variable 'fill-paragraph-function) 'rust-fill-paragraph)
-  (set (make-local-variable 'fill-forward-paragraph-function) 'rust-fill-forward-paragraph)
-  (set (make-local-variable 'adaptive-fill-function) 'rust-find-fill-prefix)
-  (set (make-local-variable 'comment-multi-line) t)
-  (set (make-local-variable 'comment-line-break-function) 'rust-comment-indent-new-line)
-  (set (make-local-variable 'imenu-generic-expression) rust-imenu-generic-expression)
-  (set (make-local-variable 'beginning-of-defun-function) 'rust-beginning-of-defun)
-  (set (make-local-variable 'end-of-defun-function) 'rust-end-of-defun)
-  )
-
+  (setq-local paragraph-separate paragraph-start)
+  (setq-local normal-auto-fill-function 'rust-do-auto-fill)
+  (setq-local fill-paragraph-function 'rust-fill-paragraph)
+  (setq-local fill-forward-paragraph-function 'rust-fill-forward-paragraph)
+  (setq-local adaptive-fill-function 'rust-find-fill-prefix)
+  (setq-local comment-multi-line t)
+  (setq-local comment-line-break-function 'rust-comment-indent-new-line)
+  (setq-local imenu-generic-expression rust-imenu-generic-expression)
+  (setq-local beginning-of-defun-function 'rust-beginning-of-defun)
+  (setq-local end-of-defun-function 'rust-end-of-defun))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.rs$" . rust-mode))
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
 (defun rust-mode-reload ()
   (interactive)
   (unload-feature 'rust-mode)
   (require 'rust-mode)
   (rust-mode))
-
-(provide 'rust-mode)
 
 ;; Issue #6887: Rather than inheriting the 'gnu compilation error
 ;; regexp (which is broken on a few edge cases), add our own 'rust
@@ -479,5 +482,7 @@ See `compilation-error-regexp-alist for help on their format.")
      (add-to-list 'compilation-error-regexp-alist-alist
                   (cons 'rustc rustc-compilation-regexps))
      (add-to-list 'compilation-error-regexp-alist 'rustc)))
+
+(provide 'rust-mode)
 
 ;;; rust-mode.el ends here
