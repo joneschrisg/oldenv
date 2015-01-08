@@ -422,3 +422,7 @@
 ;; rust
 (autoload 'rust-mode "rust-mode" "Editing mode for Rust" t)
 (assoc-mode-with 'rust-mode '("\\.rs$"))
+
+;;-----------------------------------------------------------------------------
+;; arduino
+(assoc-mode-with 'c++-mode '("\\.ino$"))
