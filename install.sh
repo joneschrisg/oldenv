@@ -1,13 +1,12 @@
 #!/bin/bash
 
-diff_tmpfile=`mktemp --tmpdir env-install-diff.XXXXXX`
+diff_tmpfile=`mktemp /tmp/env-install-diff.XXXXXX`
 trap "rm -f $diff_tmpfile" EXIT
 
 for f in `find . -type f \
     -not -path $0 \
     -not -path './.gitignore' -not -path './.git/*' -not -path './.git' \
-    -not -name '*README*' \
-    -printf "%P\n"`; do
+    -not -name '*README*'`; do
 
     src=`realpath $f`
     dest="`realpath ~`/$f"
