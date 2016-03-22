@@ -147,6 +147,9 @@ export PATH="$HOME/android/sdk/platform-tools:$PATH"
 ## Needed by node-modules-cache?
 export DISABLE_NODE_MODULES_CACHE=1
 
+export NVM_DIR="/home/cjones/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
 ##-----------------------------------------------------------------------------
 ## git development: show current branch in prompt
 ##
