@@ -109,14 +109,7 @@ alias makeless='make 2>&1 | less'
 # Always enable expressions for echo
 alias echo='echo -e'
 
-##-----------------------------------------------------------------------------
-## Mozilla
-##
-export MOZILLA_CENTRAL=$HOME/mozilla/mozilla-central
-
-PS1='\u@\h:\w[\[`hg qtop 2>/dev/null`\]]\$ '
-
-alias PUSHTOTRY='hg push -f try'
+export PATH="/usr/local/bin:$PATH"
 
 ##-----------------------------------------------------------------------------
 ## Chromium junk
@@ -145,3 +138,16 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # Add home bin directories to path
 export PATH="$HOME/sbin:$HOME/usr/bin:$PATH:$HOME/bin"
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+export PATH="$HOME/android/sdk/platform-tools:$PATH"
+
+## Needed by node-modules-cache?
+export DISABLE_NODE_MODULES_CACHE=1
+
+##-----------------------------------------------------------------------------
+## git development: show current branch in prompt
+##
+PS1='\u@\h:\w[\[`git rev-parse --abbrev-ref HEAD 2>/dev/null`\]]\$ '
